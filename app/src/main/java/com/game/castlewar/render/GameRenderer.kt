@@ -13,9 +13,7 @@ import javax.microedition.khronos.opengles.GL10
 
 /**
  * OpenGL ES 3.0 Renderer for Castle War.
- *
- * Coordinates surface lifecycle, viewport sizing, 3D world rendering,
- * and ties the fixed-timestep GameLoop to GL render frames.
+ * Coordinates the premium decor pass, core world pass and fixed-step game loop.
  */
 class GameRenderer(
     val context: Context,
@@ -36,12 +34,13 @@ class GameRenderer(
     val gameLoop = GameLoop(targetFps = GameLoop.TARGET_FPS, callback = this)
 
     val camera = GameCamera()
+    private val premiumDecorRenderer = PremiumWorldDecorRenderer(context)
     private val worldRenderer = WorldRenderer(context)
 
-    // Brighter neutral battlefield base so the premium lighting pass does not crush shadows.
-    private val clearRed = 0.16f
-    private val clearGreen = 0.18f
-    private val clearBlue = 0.15f
+    // Cleaner blue-green atmospheric base to complement bright fantasy terrain.
+    private val clearRed = 0.12f
+    private val clearGreen = 0.17f
+    private val clearBlue = 0.18f
     private val clearAlpha = 1.0f
 
     private var lastCastleTier = gameWorld.castle.tier
@@ -57,13 +56,12 @@ class GameRenderer(
         Log.i(TAG, "GL Vendor  : $glVendor")
 
         GLES30.glClearColor(clearRed, clearGreen, clearBlue, clearAlpha)
-
         GLES30.glEnable(GLES30.GL_DEPTH_TEST)
         GLES30.glDepthFunc(GLES30.GL_LEQUAL)
-
         GLES30.glEnable(GLES30.GL_BLEND)
         GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
 
+        premiumDecorRenderer.initialize()
         worldRenderer.initialize()
         gameLoop.start()
     }
@@ -88,7 +86,6 @@ class GameRenderer(
             initialFramesPresented++
             return
         }
-
         gameLoop.onDrawFrameTick()
     }
 
@@ -109,7 +106,6 @@ class GameRenderer(
                 camera.triggerUpgradePullback()
                 camera.shake(intensity = 14f, duration = 0.35f)
             } else {
-                // Run restart/reset: restore normal framing without playing an upgrade celebration.
                 camera.zoomTo(target = 1.0f, speed = 5.0f)
             }
         }
@@ -119,6 +115,9 @@ class GameRenderer(
 
     override fun onRender(interpolation: Float) {
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT or GLES30.GL_DEPTH_BUFFER_BIT)
+
+        // Decorative forests/landmarks render first; terrain/core world then resolves depth on top.
+        premiumDecorRenderer.render(camera)
         worldRenderer.render(gameWorld, camera)
     }
 
@@ -132,5 +131,6 @@ class GameRenderer(
 
     fun onDestroy() {
         gameLoop.stop()
+        premiumDecorRenderer.release()
     }
 }

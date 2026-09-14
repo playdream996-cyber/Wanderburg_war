@@ -11,21 +11,17 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.game.castlewar.game.GameManager
 import com.game.castlewar.input.VirtualJoystick
 import com.game.castlewar.render.GameSurfaceView
-import com.game.castlewar.ui.GameOverlayView
-import com.game.castlewar.ui.GuidanceOverlayView
+import com.game.castlewar.ui.FantasyGameOverlayView
 import com.game.castlewar.world.GameWorld
 
 /**
  * Main entry activity for Castle War.
- *
- * Configures landscape immersive fullscreen, hardware screen-keep-on,
- * and hosts the OpenGL ES 3.0 GameSurfaceView layered with gameplay HUD and guidance UI.
+ * Hosts the OpenGL battlefield with the premium fantasy HUD layered above it.
  */
 class MainActivity : ComponentActivity() {
 
     private lateinit var gameSurfaceView: GameSurfaceView
-    private lateinit var gameOverlayView: GameOverlayView
-    private lateinit var guidanceOverlayView: GuidanceOverlayView
+    private lateinit var gameOverlayView: FantasyGameOverlayView
 
     private val gameManager = GameManager()
     private val gameWorld = GameWorld()
@@ -51,19 +47,7 @@ class MainActivity : ComponentActivity() {
             joystick = joystick
         )
 
-        gameOverlayView = GameOverlayView(
-            context = this,
-            gameManager = gameManager,
-            gameWorld = gameWorld,
-            joystick = joystick
-        ).apply {
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        }
-
-        guidanceOverlayView = GuidanceOverlayView(
+        gameOverlayView = FantasyGameOverlayView(
             context = this,
             gameManager = gameManager,
             gameWorld = gameWorld,
@@ -77,8 +61,6 @@ class MainActivity : ComponentActivity() {
 
         rootLayout.addView(gameSurfaceView)
         rootLayout.addView(gameOverlayView)
-        rootLayout.addView(guidanceOverlayView)
-
         setContentView(rootLayout)
     }
 
@@ -104,10 +86,8 @@ class MainActivity : ComponentActivity() {
 
     private fun setupImmersiveFullscreen() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
         val controller = WindowInsetsControllerCompat(window, window.decorView)
         controller.hide(WindowInsetsCompat.Type.systemBars())
-        controller.systemBarsBehavior =
-            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 }
