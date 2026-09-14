@@ -44,6 +44,8 @@ class GameRenderer(
     private val clearBlue = 0.15f
     private val clearAlpha = 1.0f
 
+    private var lastCastleTier = gameWorld.castle.tier
+
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         val glVersion = GLES30.glGetString(GLES30.GL_VERSION)
         val glRenderer = GLES30.glGetString(GLES30.GL_RENDERER)
@@ -73,6 +75,7 @@ class GameRenderer(
         Log.i(TAG, "OpenGL ES Viewport Changed: ${width}x$height")
         GLES30.glViewport(0, 0, width, height)
         camera.setViewport(width, height)
+        camera.setCastleTier(gameWorld.castle.tier)
         camera.follow(gameWorld.castle.positionX, gameWorld.castle.positionY, true)
         camera.update(0.016f)
     }
@@ -95,6 +98,15 @@ class GameRenderer(
         if (gameManager.currentState.isSimulationActive) {
             gameWorld.update(deltaTime, joystick.inputX, joystick.inputY, camera)
         }
+
+        val currentTier = gameWorld.castle.tier
+        if (currentTier != lastCastleTier) {
+            lastCastleTier = currentTier
+            camera.setCastleTier(currentTier)
+            camera.triggerUpgradePullback()
+            camera.shake(intensity = 14f, duration = 0.35f)
+        }
+
         camera.update(deltaTime)
     }
 
