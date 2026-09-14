@@ -9,9 +9,8 @@ import kotlin.random.Random
 /**
  * Real 3D Isometric Perspective Camera for Castle War.
  *
- * Configured at a 42-degree downward pitch behind and above the moving fortress.
- * Computes official OpenGL ES 3.0 View, Projection, and VP matrices with smooth follow,
- * dynamic screen shake, and boss encounter zoom.
+ * Configured for closer premium framing so the fortress and combat units remain readable
+ * on mobile screens, while still supporting smooth follow, impact shake and boss zoom-outs.
  */
 class GameCamera {
 
@@ -24,15 +23,15 @@ class GameCamera {
     var positionY: Float = 0f
 
     // Isometric elevation and pitch
-    var pitchDegrees: Float = 42.0f
-    var baseCameraDistance: Float = 245.0f
-    var cameraDistance: Float = 245.0f
-    var fovYDegrees: Float = 48.0f
+    var pitchDegrees: Float = 46.0f
+    var baseCameraDistance: Float = 205.0f
+    var cameraDistance: Float = 205.0f
+    var fovYDegrees: Float = 42.0f
     var nearZ: Float = 10.0f
     var farZ: Float = 2500.0f
 
     // Smooth follow speed
-    var followSpeed: Float = 6.0f
+    var followSpeed: Float = 7.5f
 
     // Zoom level (1.0 = standard, < 1.0 = zoomed out for boss/tier, > 1.0 = close up)
     var zoom: Float = 1.0f
@@ -91,28 +90,28 @@ class GameCamera {
         }
     }
 
-    // Specific combat impact shakes according to requirements
-    fun shakeCannon() = shake(3.5f, 0.12f)
-    fun shakeExplosion() = shake(7.0f, 0.18f)
-    fun shakeBuildingCollapse() = shake(9.5f, 0.22f)
-    fun shakeBossAttack() = shake(15.0f, 0.35f)
-    fun shakeCastleDamage() = shake(11.0f, 0.22f)
-    fun triggerCannonRecoilShake() = shake(3.5f, 0.12f)
-    fun triggerCannonImpactShake() = shake(7.0f, 0.18f)
+    // Stronger but short combat impact shakes for better mobile feedback
+    fun shakeCannon() = shake(4.5f, 0.12f)
+    fun shakeExplosion() = shake(8.5f, 0.18f)
+    fun shakeBuildingCollapse() = shake(11.0f, 0.24f)
+    fun shakeBossAttack() = shake(17.0f, 0.38f)
+    fun shakeCastleDamage() = shake(12.5f, 0.24f)
+    fun triggerCannonRecoilShake() = shake(4.5f, 0.12f)
+    fun triggerCannonImpactShake() = shake(8.5f, 0.18f)
 
     /**
-     * Castle upgrade: Subtle camera pull-back followed by smooth return.
+     * Castle upgrade: clearly visible pull-back, then smooth return to close framing.
      */
     fun triggerUpgradePullback() {
-        zoomTo(0.86f, speed = 4.0f)
-        upgradePullbackTimer = 0.75f
+        zoomTo(0.80f, speed = 4.8f)
+        upgradePullbackTimer = 1.0f
     }
 
     /**
-     * Adapts base camera framing so larger castle tiers fit comfortably (20-30% screen width).
+     * Keeps larger tiers readable without making units feel tiny.
      */
     fun setCastleTier(tier: Int) {
-        cameraDistance = baseCameraDistance + (tier.coerceIn(1, 5) - 1) * 16.0f
+        cameraDistance = baseCameraDistance + (tier.coerceIn(1, 5) - 1) * 10.0f
     }
 
     fun zoomTo(target: Float, speed: Float = 3.0f) {
@@ -137,7 +136,7 @@ class GameCamera {
             upgradePullbackTimer -= deltaTime
             if (upgradePullbackTimer <= 0f) {
                 targetZoom = 1.0f
-                zoomSpeed = 2.5f
+                zoomSpeed = 2.8f
             }
         }
 
