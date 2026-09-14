@@ -101,10 +101,17 @@ class GameRenderer(
 
         val currentTier = gameWorld.castle.tier
         if (currentTier != lastCastleTier) {
+            val evolved = currentTier > lastCastleTier
             lastCastleTier = currentTier
             camera.setCastleTier(currentTier)
-            camera.triggerUpgradePullback()
-            camera.shake(intensity = 14f, duration = 0.35f)
+
+            if (evolved) {
+                camera.triggerUpgradePullback()
+                camera.shake(intensity = 14f, duration = 0.35f)
+            } else {
+                // Run restart/reset: restore normal framing without playing an upgrade celebration.
+                camera.zoomTo(target = 1.0f, speed = 5.0f)
+            }
         }
 
         camera.update(deltaTime)
