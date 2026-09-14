@@ -1,11 +1,7 @@
 package com.game.castlewar
 
-import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
@@ -16,18 +12,20 @@ import com.game.castlewar.game.GameManager
 import com.game.castlewar.input.VirtualJoystick
 import com.game.castlewar.render.GameSurfaceView
 import com.game.castlewar.ui.GameOverlayView
+import com.game.castlewar.ui.GuidanceOverlayView
 import com.game.castlewar.world.GameWorld
 
 /**
  * Main entry activity for Castle War.
  *
  * Configures landscape immersive fullscreen, hardware screen-keep-on,
- * and hosts the OpenGL ES 3.0 GameSurfaceView layered with the interactive GameOverlayView.
+ * and hosts the OpenGL ES 3.0 GameSurfaceView layered with gameplay HUD and guidance UI.
  */
 class MainActivity : ComponentActivity() {
 
     private lateinit var gameSurfaceView: GameSurfaceView
     private lateinit var gameOverlayView: GameOverlayView
+    private lateinit var guidanceOverlayView: GuidanceOverlayView
 
     private val gameManager = GameManager()
     private val gameWorld = GameWorld()
@@ -36,13 +34,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Keep the display active during gameplay
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-        // Enable edge-to-edge layout
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // Root container hosting both OpenGL ES rendering and interactive HUD overlay
         val rootLayout = FrameLayout(this).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -69,8 +63,21 @@ class MainActivity : ComponentActivity() {
             )
         }
 
+        guidanceOverlayView = GuidanceOverlayView(
+            context = this,
+            gameManager = gameManager,
+            gameWorld = gameWorld,
+            joystick = joystick
+        ).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+
         rootLayout.addView(gameSurfaceView)
         rootLayout.addView(gameOverlayView)
+        rootLayout.addView(guidanceOverlayView)
 
         setContentView(rootLayout)
     }
@@ -92,9 +99,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-            setupImmersiveFullscreen()
-        }
+        if (hasFocus) setupImmersiveFullscreen()
     }
 
     private fun setupImmersiveFullscreen() {
