@@ -28,23 +28,20 @@ class GameRenderer(
         private const val TAG = "GameRenderer"
     }
 
-    // Viewport dimensions
     var viewportWidth: Int = 0
         private set
     var viewportHeight: Int = 0
         private set
 
-    // Game loop timing instance
     val gameLoop = GameLoop(targetFps = GameLoop.TARGET_FPS, callback = this)
 
-    // Visual rendering subsystems
     val camera = GameCamera()
     private val worldRenderer = WorldRenderer(context)
 
-    // Clear color (Atmospheric dark medieval battlefield slate)
-    private val clearRed = 0.11f
-    private val clearGreen = 0.13f
-    private val clearBlue = 0.10f
+    // Brighter neutral battlefield base so the premium lighting pass does not crush shadows.
+    private val clearRed = 0.16f
+    private val clearGreen = 0.18f
+    private val clearBlue = 0.15f
     private val clearAlpha = 1.0f
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -57,20 +54,15 @@ class GameRenderer(
         Log.i(TAG, "GL Renderer: $glRenderer")
         Log.i(TAG, "GL Vendor  : $glVendor")
 
-        // Set clear color
         GLES30.glClearColor(clearRed, clearGreen, clearBlue, clearAlpha)
 
-        // Depth and blending state
         GLES30.glEnable(GLES30.GL_DEPTH_TEST)
         GLES30.glDepthFunc(GLES30.GL_LEQUAL)
 
         GLES30.glEnable(GLES30.GL_BLEND)
         GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
 
-        // Initialize world batch shader and buffers
         worldRenderer.initialize()
-
-        // Start timing loop
         gameLoop.start()
     }
 
@@ -88,20 +80,15 @@ class GameRenderer(
     private var initialFramesPresented = 0
 
     override fun onDrawFrame(gl: GL10?) {
-        // Guarantee the very first frame presents immediately (<5ms) to satisfy SurfaceSyncGroup
         if (initialFramesPresented < 1) {
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT or GLES30.GL_DEPTH_BUFFER_BIT)
             initialFramesPresented++
             return
         }
 
-        // Ticks fixed timestep updates and fires onRender callback
         gameLoop.onDrawFrameTick()
     }
 
-    /**
-     * Fixed-timestep logic tick callback from GameLoop.
-     */
     override fun onUpdate(deltaTime: Float) {
         gameManager.update(deltaTime)
 
@@ -111,15 +98,8 @@ class GameRenderer(
         camera.update(deltaTime)
     }
 
-    /**
-     * Render callback from GameLoop.
-     * @param interpolation Fractional alpha [0..1] between the last two physics frames.
-     */
     override fun onRender(interpolation: Float) {
-        // Clear color and depth buffers
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT or GLES30.GL_DEPTH_BUFFER_BIT)
-
-        // Render the 2.5D medieval world, moving fortress, enemies, projectiles, and particles
         worldRenderer.render(gameWorld, camera)
     }
 
@@ -135,4 +115,3 @@ class GameRenderer(
         gameLoop.stop()
     }
 }
-
