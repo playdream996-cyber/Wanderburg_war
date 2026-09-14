@@ -1,0 +1,6 @@
+{
+  "name": "Castle War",
+  "description": "Medieval moving-castle roguelike action game rendered in OpenGL ES 3.0",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

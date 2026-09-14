@@ -1,0 +1,65 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Castle Wall and Towers -->
+    <path
+        android:pathData="M27,77 L81,77 L81,52 L75,52 L75,58 L69,58 L69,52 L63,52 L63,58 L57,58 L57,52 L51,52 L51,58 L45,58 L45,52 L39,52 L39,58 L33,58 L33,52 L27,52 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="27"
+                android:startY="52"
+                android:endX="81"
+                android:endY="77"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#E0B644" />
+                <item android:offset="1.0" android:color="#B3861B" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Central Tower -->
+    <path
+        android:pathData="M44,52 L64,52 L64,34 L61,34 L61,38 L57,38 L57,34 L53,34 L53,38 L49,38 L49,34 L46,34 L46,38 L44,38 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="44"
+                android:startY="34"
+                android:endX="64"
+                android:endY="52"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FFE89C" />
+                <item android:offset="1.0" android:color="#D4AF37" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Flag -->
+    <path
+        android:fillColor="#E63946"
+        android:pathData="M54,23 L54,34 L62,28 Z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.2"
+        android:fillColor="#00000000"
+        android:pathData="M54,22 L54,34" />
+    <!-- Gate Arch -->
+    <path
+        android:fillColor="#1A1C23"
+        android:pathData="M48,77 L48,65 C48,61.7 50.7,59 54,59 C57.3,59 60,61.7 60,65 L60,77 Z" />
+    <!-- Portcullis Grate -->
+    <path
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.0"
+        android:fillColor="#00000000"
+        android:pathData="M54,59 L54,77 M51,62 L51,77 M57,62 L57,77 M48,68 L60,68 M48,73 L60,73" />
+    <!-- Siege Treads -->
+    <path
+        android:fillColor="#7D8597"
+        android:pathData="M24,76 L32,76 L32,83 L24,83 Z M76,76 L84,76 L84,83 L76,83 Z" />
+    <path
+        android:strokeColor="#D4AF37"
+        android:strokeWidth="1.2"
+        android:fillColor="#00000000"
+        android:pathData="M22,83 L86,83" />
+</vector>
