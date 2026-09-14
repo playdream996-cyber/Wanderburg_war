@@ -66,7 +66,13 @@ class GuidanceOverlayView(
 
     private fun updateProgress(now: Long) {
         val tier = gameWorld.castle.tier
-        if (tier > lastTier) {
+
+        // A new run resets the castle to Tier 1. Keep the banner tracker in sync so
+        // Tier 2+ transformations in the next run are still celebrated correctly.
+        if (tier < lastTier) {
+            lastTier = tier
+            tierBannerUntilMs = 0L
+        } else if (tier > lastTier) {
             lastTier = tier
             tierBannerUntilMs = now + 2600L
             tutorialFinished = true
@@ -100,6 +106,7 @@ class GuidanceOverlayView(
         canvas.drawText("BATTLE GUIDE  ${tutorialStep + 1}/3", w * 0.5f, top + panelH * 0.38f, title)
 
         body.textSize = h * 0.025f
+        body.color = Color.parseColor("#F3F0E8")
         val message = when (tutorialStep) {
             0 -> "Drag the joystick to drive your walking fortress"
             1 -> "Move toward enemies — your weapons fire automatically"
